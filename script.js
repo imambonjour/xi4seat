@@ -63,12 +63,12 @@ function createSeatingPairs(people) {
     // Membuat pasangan Laki-laki
     for (let i = 0; i < males.length - 1; i += 2) {
         // Pasangan 1 meja: [orang1, orang2, gender]
-        allPairs.push([males[i].nama, males[i + 1].nama, 'L']); 
+        allPairs.push([males[i].nama, males[i + 1].nama, 'L']);
     }
     if (males.length % 2 !== 0) {
         console.warn(`${males[males.length - 1].nama} (L) tidak mendapat pasangan dan akan ditempatkan sendiri.`);
     }
-    
+
     // Membuat pasangan Perempuan
     for (let i = 0; i < females.length - 1; i += 2) {
         // Pasangan 1 meja: [orang1, orang2, gender]
@@ -79,7 +79,7 @@ function createSeatingPairs(people) {
     }
 
     // Acak urutan pasangan meja (sehingga L dan P tercampur secara acak)
-    shuffle(allPairs); 
+    shuffle(allPairs);
 
     return allPairs;
 }
@@ -89,44 +89,103 @@ function createSeatingPairs(people) {
 
 function renderSeatingChart(pairs) {
     const chartElement = document.getElementById('seating-chart');
-    if (!chartElement) return; // Pastikan elemen ditemukan
+    if (!chartElement) return;
 
-    chartElement.innerHTML = ''; // Kosongkan container
+    chartElement.innerHTML = '';
 
-    pairs.forEach(pair => {
+    const totalPairs = pairs.length;
+    const lastRowStartIndex = Math.floor((totalPairs - 1) / 4) * 4;
+    const lastRowPairsCount = totalPairs - lastRowStartIndex;
+
+    pairs.forEach((pair, index) => {
         const [name1, name2, gender] = pair;
 
-        // 1. Buat elemen Meja (Table Pair)
-        const tablePairDiv = document.createElement('div');
-        tablePairDiv.classList.add('table-pair');
+        // Special logic for the back row: if exactly 2 pairs, push to corners
+        if (index === lastRowStartIndex + 1 && lastRowPairsCount === 2) {
+            // Insert two spacers before the second pair of the last row
+            const spacer1 = document.createElement('div');
+            spacer1.classList.add('spacer');
+            const spacer2 = document.createElement('div');
+            spacer2.classList.add('spacer');
+            chartElement.appendChild(spacer1);
+            chartElement.appendChild(spacer2);
+        }
 
-        // 2. Buat elemen Kursi 1
-        const seat1Div = document.createElement('div');
-        seat1Div.classList.add('seat', gender); // Tambahkan kelas gender untuk styling
-        seat1Div.textContent = name1;
+        // 1. Create Table Card
+        const tableCard = document.createElement('div');
+        tableCard.classList.add('table-card');
 
-        // 3. Buat elemen Kursi 2
-        const seat2Div = document.createElement('div');
-        seat2Div.classList.add('seat', gender); // Tambahkan kelas gender untuk styling
-        seat2Div.textContent = name2;
-        
-        // Catatan: Anda bisa menambahkan logika di sini untuk tempat duduk sisa ganjil
+        // Helper to create seat item
+        const createSeat = (name, gender) => {
+            const seatDiv = document.createElement('div');
+            seatDiv.classList.add('seat-item', gender);
 
-        // Gabungkan kursi ke meja
-        tablePairDiv.appendChild(seat1Div);
-        tablePairDiv.appendChild(seat2Div);
+            const label = document.createElement('span');
+            label.classList.add('seat-label');
+            label.textContent = gender === 'L' ? 'Laki-laki' : 'Perempuan';
 
-        // Gabungkan meja ke chart container
-        chartElement.appendChild(tablePairDiv);
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = name;
+
+            seatDiv.appendChild(label);
+            seatDiv.appendChild(nameSpan);
+            return seatDiv;
+        };
+
+        const seat1 = createSeat(name1, gender);
+        const seat2 = createSeat(name2, gender);
+
+        tableCard.appendChild(seat1);
+        tableCard.appendChild(seat2);
+
+        chartElement.appendChild(tableCard);
     });
 }
 
-// --- 4. Eksekusi ---
+// --- 4. Fungsi Persistence ---
+
+const STORAGE_KEY = 'seating_arrangement';
+
+function saveSeatingPairs(pairs) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(pairs));
+}
+
+function loadSeatingPairs() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : null;
+}
+
+// --- 5. Eksekusi dan Event Listeners ---
+
+function initSeating(forceReshuffle = false) {
+    let seatingPairs;
+
+    if (!forceReshuffle) {
+        seatingPairs = loadSeatingPairs();
+    }
+
+    if (!seatingPairs) {
+        console.log("Generating new seating arrangement...");
+        seatingPairs = createSeatingPairs(rawData);
+        saveSeatingPairs(seatingPairs);
+    } else {
+        console.log("Loading seating arrangement from storage.");
+    }
+
+    renderSeatingChart(seatingPairs);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Dapatkan semua pasangan meja
-    const seatingPairs = createSeatingPairs(rawData);
-    
-    // 2. Tampilkan di web
-    renderSeatingChart(seatingPairs);
+    // 1. Inisialisasi tampilan awal
+    initSeating();
+
+    // 2. Tambahkan event listener untuk tombol Reshuffle
+    const reshuffleBtn = document.getElementById('reshuffle-btn');
+    if (reshuffleBtn) {
+        reshuffleBtn.addEventListener('click', () => {
+            if (confirm('Apakah Anda yakin ingin mengacak ulang tempat duduk?')) {
+                initSeating(true);
+            }
+        });
+    }
 });

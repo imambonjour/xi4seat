@@ -1,19 +1,38 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peta Tempat Duduk Acak</title>
+    <title>Xi4Seat • Modern Seating Chart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
 
-    <div class="seating-chart-container">
-        <h1>Peta Tempat Duduk</h1>
-        <div class="seating-chart" id="seating-chart">
-            </div>
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
     </div>
+
+    <main class="app-container">
+        <header class="app-header">
+            <h1 class="app-title">Peta Tempat Duduk</h1>
+            <p class="app-subtitle">Siswa Kelas XI-4</p>
+            <button id="reshuffle-btn" class="btn-primary">Reshuffle Kursi</button>
+        </header>
+
+        <section class="seating-section">
+            <div class="seating-grid" id="seating-chart">
+                <!-- Seating pairs will be rendered here -->
+            </div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>
+
 </html>

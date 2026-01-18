@@ -1,68 +1,224 @@
+:root {
+    --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --bg-color: #0f172a;
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --male-color: #38bdf8;
+    --female-color: #fb7185;
+    --male-bg: rgba(56, 189, 248, 0.1);
+    --female-bg: rgba(251, 113, 133, 0.1);
+    --glass-blur: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    padding: 20px;
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px 10px;
 }
 
-.seating-chart-container {
-    max-width: 1200px;
-    margin: auto;
-    background-color: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* Background Animated Blobs */
+.background-blobs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
 }
 
-h1 {
+.blob {
+    position: absolute;
+    width: 40vw;
+    height: 40vw;
+    filter: blur(80px);
+    border-radius: 50%;
+    opacity: 0.15;
+    animation: move 20s infinite alternate;
+}
+
+.blob-1 {
+    background: #6366f1;
+    top: -10%;
+    left: -10%;
+}
+
+.blob-2 {
+    background: #8b5cf6;
+    bottom: -10%;
+    right: -10%;
+    animation-delay: -5s;
+}
+
+.blob-3 {
+    background: #fb7185;
+    top: 30%;
+    right: 20%;
+    animation-delay: -10s;
+}
+
+@keyframes move {
+    from {
+        transform: translate(0, 0) scale(1);
+    }
+
+    to {
+        transform: translate(10%, 10%) scale(1.1);
+    }
+}
+
+/* Main Container */
+.app-container {
+    width: 100%;
+    max-width: 1000px;
+    position: relative;
+    z-index: 1;
+}
+
+.app-header {
     text-align: center;
-    color: #333;
     margin-bottom: 30px;
 }
 
-.seating-chart {
-    /* Menerapkan CSS Grid untuk tata letak 4 kolom */
+.app-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+}
+
+.app-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+/* Button Styling */
+.btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Seating Grid */
+.seating-grid {
     display: grid;
-    /* 4 kolom dengan lebar fraksi (1fr) yang sama */
     grid-template-columns: repeat(4, 1fr);
-    gap: 30px 20px; /* Jarak antar baris dan kolom */
+    gap: 16px;
+    perspective: 1000px;
 }
 
-/* Kotak Meja (Meja berisi 2 kursi) */
-.table-pair {
-    display: flex; /* Menggunakan Flexbox di dalam grid item */
-    background-color: #d3d3d3; /* Warna abu-abu seperti di gambar */
-    height: 80px;
-    border: 2px solid #555;
-    border-radius: 4px;
-    overflow: hidden; /* Penting agar border di dalam tidak tumpang tindih */
-}
-
-/* Kursi (Tempat duduk individual) */
-.seat {
-    flex-grow: 1; /* Agar kedua kursi memiliki lebar yang sama */
+/* Table Pair Card */
+.table-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 10px;
     display: flex;
+    gap: 8px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.table-card:hover {
+    transform: translateY(-3px) rotateX(2deg);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+/* Individual Seat */
+.seat-item {
+    flex: 1;
+    padding: 10px 8px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 5px;
-    font-size: 10px; /* Kecilkan ukuran font agar nama muat */
-    font-weight: bold;
-    color: #222;
-    background-color: #e0e0e0;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 500;
+    min-height: 60px;
 }
 
-/* Garis pemisah di tengah meja */
-.table-pair .seat:first-child {
-    border-right: 1px solid #a0a0a0;
+.seat-item.L {
+    background: var(--male-bg);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    color: var(--male-color);
 }
 
-/* Warna untuk membedakan Laki-laki dan Perempuan (Opsional) */
-.seat.L {
-    background-color: #b3d9ff; /* Biru muda untuk Laki-laki */
+.seat-item.P {
+    background: var(--female-bg);
+    border: 1px solid rgba(251, 113, 133, 0.2);
+    color: var(--female-color);
 }
 
-.seat.P {
-    background-color: #ffb3d9; /* Pink muda untuk Perempuan */
+.seat-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    opacity: 0.6;
 }
 
-/* Penataan untuk kasus khusus (misal, baris terakhir hanya 1 meja) */
-/* Grid sudah menanganinya, tapi ini bisa ditambahkan jika perlu penyesuaian khusus */
+/* Spacer for back row separation */
+.spacer {
+    pointer-events: none;
+}
+
+/* Responsive adjustment */
+@media (max-width: 900px) {
+    .seating-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .spacer {
+        display: none;
+    }
+}
+
+@media (max-width: 500px) {
+    .seating-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .app-title {
+        font-size: 1.8rem;
+    }
+}
