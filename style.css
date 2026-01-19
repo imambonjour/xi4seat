@@ -111,27 +111,121 @@ body {
     margin-bottom: 20px;
 }
 
-/* Button Styling */
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 0.8rem 1.8rem;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
 .btn-primary {
     background: var(--primary-gradient);
     color: white;
-    border: none;
-    padding: 10px 24px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.btn-primary:hover {
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.btn-primary:active {
+.btn-primary:active,
+.btn-secondary:active {
     transform: translateY(0);
+}
+
+/* History List Styling */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.history-item {
+    background: var(--card-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.history-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateX(5px);
+}
+
+.history-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.history-date {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.history-file {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    padding-top: 50px;
+}
+
+.modal-content {
+    margin: auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 1000px;
+}
+
+.close-modal {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 /* Seating Grid */

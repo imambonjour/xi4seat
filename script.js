@@ -142,34 +142,50 @@ function renderSeatingChart(pairs) {
     });
 }
 
-// --- 4. Fungsi Persistence ---
+// --- 4. Fungsi Persistence (Server API) ---
 
-const STORAGE_KEY = 'seating_arrangement';
-
-function saveSeatingPairs(pairs) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(pairs));
+async function saveSeatingPairs(pairs) {
+    try {
+        const response = await fetch('/api/config', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(pairs)
+        });
+        if (!response.ok) throw new Error('Failed to save configuration to server');
+        console.log("Config saved to server.");
+    } catch (error) {
+        console.error("Error saving seating arrangement:", error);
+    }
 }
 
-function loadSeatingPairs() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : null;
+async function loadSeatingPairs() {
+    try {
+        const response = await fetch('/api/config/latest');
+        if (!response.ok) return null;
+        return await response.json();
+    } catch (error) {
+        console.error("Error loading seating arrangement:", error);
+        return null;
+    }
 }
 
 // --- 5. Eksekusi dan Event Listeners ---
 
-function initSeating(forceReshuffle = false) {
+async function initSeating(forceReshuffle = false) {
     let seatingPairs;
 
     if (!forceReshuffle) {
-        seatingPairs = loadSeatingPairs();
+        seatingPairs = await loadSeatingPairs();
     }
 
     if (!seatingPairs) {
         console.log("Generating new seating arrangement...");
         seatingPairs = createSeatingPairs(rawData);
-        saveSeatingPairs(seatingPairs);
+        await saveSeatingPairs(seatingPairs);
     } else {
-        console.log("Loading seating arrangement from storage.");
+        console.log("Loading seating arrangement from server.");
     }
 
     renderSeatingChart(seatingPairs);
