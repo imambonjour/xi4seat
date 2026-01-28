@@ -15,10 +15,31 @@ app.use(express.static(path.join(__dirname)));
 const CACHE_DIR = path.join(__dirname, 'cache');
 const LOG_FILE = path.join(__dirname, 'logs', 'reshuffle.log');
 const CURRENT_CONFIG_FILE = path.join(__dirname, 'current.json');
+const CURRENT_NAMES_FILE = path.join(__dirname, 'name.csv');
+
 
 // Ensure directories exist
 fs.ensureDirSync(CACHE_DIR);
 fs.ensureDirSync(path.dirname(LOG_FILE));
+
+// Get names from CSV
+app.get('/api/names', async (req, res) => {
+    try {
+        if (!(await fs.pathExists(CURRENT_NAMES_FILE))) {
+            return res.status(404).json({ error: 'name.csv not found' });
+        }
+        const csvContent = await fs.readFile(CURRENT_NAMES_FILE, 'utf-8');
+        const lines = csvContent.trim().split('\n');
+        const names = lines.map(line => {
+            const [nama, gender] = line.split(',').map(s => s.trim());
+            return { nama, gender };
+        });
+        res.json(names);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to read names from CSV' });
+    }
+});
 
 // Get the latest config
 app.get('/api/config/latest', async (req, res) => {

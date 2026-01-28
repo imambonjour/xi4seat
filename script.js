@@ -1,42 +1,6 @@
-// --- 1. Data dari name.csv (Sudah Dikonversi) ---
-const rawData = [
-    { nama: "ADILAH NUR FARHANAH", gender: "P" },
-    { nama: "ARI FIDRIYANSYAH", gender: "L" },
-    { nama: "FATHIYA ISNAINI SOLIHA", gender: "P" },
-    { nama: "HABIBI RIFKY AL SHIRADZI", gender: "L" },
-    { nama: "HALIMATUN SA'DIAH", gender: "P" },
-    { nama: "HUMAIRA WINIIE SALIMAH", gender: "P" },
-    { nama: "IMAM AHMAD SUJIWO", gender: "L" },
-    { nama: "INAYA NUR FAKHIRA", gender: "P" },
-    { nama: "INAYAH SYAUQI KAMILA", gender: "P" },
-    { nama: "KAFFAH ABDULAH", gender: "L" },
-    { nama: "KAILA DAVINA MARUF", gender: "P" },
-    { nama: "KANIA HAFSYAH RAMADHANI", gender: "P" },
-    { nama: "MAHIA NARASAKHI MUHAQIQIN", gender: "L" },
-    { nama: "MIEZA CAHYA JOMANTARA", gender: "P" },
-    { nama: "MOHAMMAD FADLI RIANATA", gender: "L" },
-    { nama: "MUHAMAD RAJIB ABDUL ROHMAN", gender: "L" },
-    { nama: "MUHAMMAD ALYAFI ABDILLAH", gender: "L" },
-    { nama: "MUHAMMAD DZIKRIE ALDIANSYAH", gender: "L" },
-    { nama: "MUHAMMAD HAMZAH AL FARISI", gender: "L" },
-    { nama: "MUHAMMAD TEGAR CADMIESA SAPUTRA", gender: "L" },
-    { nama: "NABIL UMAR", gender: "L" },
-    { nama: "NADIRA HIKMATUL ULYA", gender: "P" },
-    { nama: "NAHDAH RIHHADATUL A'ISY", gender: "P" },
-    { nama: "NAILAH AZKA SYAHIDAH", gender: "P" },
-    { nama: "NARESWARI ADKHA NASHIRAH", gender: "P" },
-    { nama: "NAUFAL IBRAHIM ABDILLAH", gender: "L" },
-    { nama: "NAUFAL MUHAMMAD ZAKI", gender: "L" },
-    { nama: "NAUFAL RAFIFAYDIN FAJRIANSYAH", gender: "L" },
-    { nama: "NAURA SABIYA HUSNA ADINATA", gender: "P" },
-    { nama: "NOVAL TANJUNG", gender: "L" },
-    { nama: "NURUL JANNATA", gender: "P" },
-    { nama: "REGITHA AULIA MAHARANI", gender: "P" },
-    { nama: "SHAFFIRA PUTRI VALENTINE", gender: "P" },
-    { nama: "SYAFIQ ALFATH MAULANA", gender: "L" },
-    { nama: "ZAHIRAH DEGES RAELI SIREGAR", gender: "P" },
-    { nama: "MUHAMMAD FIRJATULLAH ENDIE", gender: "L" },
-];
+// --- 1. State ---
+let rawData = [];
+
 
 // --- 2. Fungsi Pembantu (Helper Functions) ---
 
@@ -173,6 +137,18 @@ async function loadSeatingPairs() {
     }
 }
 
+async function loadNames() {
+    try {
+        const response = await fetch('/api/names');
+        if (!response.ok) throw new Error('Failed to load names from server');
+        return await response.json();
+    } catch (error) {
+        console.error("Error loading names:", error);
+        return [];
+    }
+}
+
+
 // --- 5. Eksekusi dan Event Listeners ---
 
 async function initSeating(forceReshuffle = false) {
@@ -182,8 +158,13 @@ async function initSeating(forceReshuffle = false) {
         seatingPairs = await loadSeatingPairs();
     }
 
-    if (!seatingPairs) {
+    if (!seatingPairs || forceReshuffle) {
         console.log("Generating new seating arrangement...");
+        rawData = await loadNames();
+        if (rawData.length === 0) {
+            console.error("No names found to generate seating.");
+            return;
+        }
         seatingPairs = createSeatingPairs(rawData);
         await saveSeatingPairs(seatingPairs);
     } else {
@@ -192,6 +173,7 @@ async function initSeating(forceReshuffle = false) {
 
     renderSeatingChart(seatingPairs);
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Inisialisasi tampilan awal
